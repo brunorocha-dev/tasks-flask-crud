@@ -1,16 +1,24 @@
-# Estrutura básica
-# Eu posso ter na aplicação web várias rotas, e essas rotas serve para ponto de acesso para estabelecer comunicação (programas/usuários)
-from flask import Flask
+from flask import Flask, request, jsonify
+from models.tasks import Tasks # importando em outro arquivo que eu fiz
 
 app = Flask(__name__)
 
-@app.route("/") # Criando uma rota
-def hello_world(): # vai ser executada
-    return "Hello World" # Retorna esse texto
+# CRUD
+# create, read, update e delete
+# Tabela: Trefa
 
-@app.route("/about") # Criando outra rota 'sobre'
-def about():
-    return "Página sobre"
+tasks = []
+tasks_id_control = 1
+
+@app.route("/tasks", methods=["POST"]) 
+def create_tasks():
+    global tasks_id_control
+    data = request.get_json()
+    new_tasks = Tasks(id=tasks_id_control, title=data.get["title"], description=data.get("description", ""))
+    tasks_id_control += 1
+    tasks.append(new_tasks)
+    print(tasks)
+    return jsonify({"message": "Nova tarefa criada com sucesso"})
 
 if __name__ == "__main__":
     app.run(debug=True)
